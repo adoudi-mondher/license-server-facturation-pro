@@ -52,14 +52,13 @@ class LicenseGenerator:
             expires_at = datetime.utcnow() + timedelta(days=duration_days)
 
         # Créer le payload de la licence
+        # IMPORTANT: Utiliser 'expiry' et non 'expires_at' pour compatibilité avec EasyFacture client (license.py ligne 104)
         license_data = {
             "machine_id": machine_id,
             "email": email,
-            "license_type": license_type,
-            "issued_at": datetime.utcnow().isoformat(),
-            "expires_at": expires_at.isoformat() if expires_at else None,
-            "customer_name": customer_name,
-            "company_name": company_name
+            "expiry": expires_at.isoformat() if expires_at else None,  # 'expiry' pour compatibilité!
+            "version": "1.7.0",
+            "generated": datetime.utcnow().isoformat()
         }
 
         # Convertir en JSON et chiffrer
@@ -95,11 +94,11 @@ class LicenseGenerator:
             if license_data.get("machine_id") != machine_id:
                 return False, "Licence invalide pour cette machine", None
 
-            # Vérifier l'expiration
-            expires_at_str = license_data.get("expires_at")
-            if expires_at_str:
-                expires_at = datetime.fromisoformat(expires_at_str)
-                if datetime.utcnow() > expires_at:
+            # Vérifier l'expiration (utiliser 'expiry' pour compatibilité avec EasyFacture)
+            expiry_str = license_data.get("expiry")
+            if expiry_str:
+                expiry = datetime.fromisoformat(expiry_str)
+                if datetime.utcnow() > expiry:
                     return False, "Licence expirée", None
 
             # Licence valide
