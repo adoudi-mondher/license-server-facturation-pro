@@ -457,4 +457,4 @@ Licence Open source - Pour les développeurs
 
 ---
 
-Version: 1.0.0 - Janvier 2025
+Version: 1.0.0 - Janvier 2026
