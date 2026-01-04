@@ -14,6 +14,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.api.licenses import router as licenses_router, limiter
+from app.api.payment import router as payment_router
 
 # Créer les tables (en production, utiliser Alembic)
 Base.metadata.create_all(bind=engine)
@@ -43,6 +44,7 @@ app.add_middleware(SlowAPIMiddleware)
 
 # Inclure les routers
 app.include_router(licenses_router, prefix=settings.API_V1_PREFIX)
+app.include_router(payment_router)  # Payment router a son propre prefix /api
 
 
 @app.get("/")

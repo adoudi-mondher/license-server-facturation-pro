@@ -71,6 +71,44 @@ class HeartbeatRequest(BaseModel):
     usage_stats: Optional[dict] = None
 
 
+class CreateCheckoutSessionRequest(BaseModel):
+    """Requête pour créer une session Stripe Checkout"""
+    machine_id: str = Field(..., min_length=32, max_length=64)
+    email: EmailStr
+    currency: Optional[str] = Field(default='eur', pattern='^(eur|usd|chf|gbp)$')
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "machine_id": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+                "email": "user@example.com",
+                "currency": "eur"
+            }
+        }
+
+
+class StripeWebhookEvent(BaseModel):
+    """Événement reçu du webhook Stripe (simplifié)"""
+    type: str
+    data: dict
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "id": "cs_test_...",
+                        "metadata": {
+                            "machine_id": "abc123...",
+                            "email": "user@example.com"
+                        }
+                    }
+                }
+            }
+        }
+
+
 # ============================================
 # RESPONSE SCHEMAS
 # ============================================
@@ -111,6 +149,22 @@ class ValidationResponse(BaseModel):
                 "expires_at": "2024-02-15T10:30:00",
                 "days_remaining": 25,
                 "license_type": "trial"
+            }
+        }
+
+
+class CheckoutSessionResponse(BaseModel):
+    """Réponse contenant l'URL de la session Stripe Checkout"""
+    success: bool
+    checkout_url: str
+    session_id: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "success": True,
+                "checkout_url": "https://checkout.stripe.com/c/pay/cs_test_...",
+                "session_id": "cs_test_..."
             }
         }
 

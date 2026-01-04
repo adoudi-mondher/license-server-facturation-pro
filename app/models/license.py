@@ -43,6 +43,13 @@ class License(Base):
     # Métadonnées
     notes = Column(Text, nullable=True)  # Notes admin
 
+    # 🆕 Stripe Payment Information (pour licences lifetime achetées)
+    stripe_customer_id = Column(String(255), nullable=True, index=True)
+    stripe_session_id = Column(String(255), nullable=True, index=True)
+    stripe_payment_intent_id = Column(String(255), nullable=True, index=True)
+    amount_paid = Column(Integer, nullable=True)  # Montant en centimes (19900 = 199.00€)
+    currency = Column(String(3), default='EUR', nullable=True)
+
     # Relations
     activations = relationship("Activation", back_populates="license", cascade="all, delete-orphan")
     heartbeats = relationship("Heartbeat", back_populates="license", cascade="all, delete-orphan")
