@@ -150,7 +150,7 @@ async def stripe_webhook(
 
         # Extraction robuste de l'email
         email = session['metadata'].get('email')
-        if not email or "pending" in email.lower():
+        if not email or "pending" in email.lower() or "test" in email.lower():
             # Fallback: email collecté par Stripe au checkout
             email = session.get('customer_details', {}).get('email')
 
