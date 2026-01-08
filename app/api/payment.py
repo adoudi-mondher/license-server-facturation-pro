@@ -241,3 +241,31 @@ async def stripe_webhook(
         return {"status": "success", "message": "License created/updated and email queued"}
 
     return {"status": "ignored"}
+
+
+@router.get("/get-license-by-session/{session_id}")
+async def get_license_by_session(
+    session_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Récupère la clé de licence par session_id Stripe
+    Utilisé par la page success après paiement
+    """
+    # Chercher la licence par stripe_session_id
+    license_record = db.query(License).filter(
+        License.stripe_session_id == session_id
+    ).first()
+
+    if not license_record:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "NOT_FOUND", "message": "Licence non trouvée pour cette session"}
+        )
+
+    return {
+        "success": True,
+        "license_key": license_record.license_key,
+        "email": license_record.email,
+        "license_type": license_record.license_type
+    }
